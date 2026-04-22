@@ -1,0 +1,203 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{YOLO-Based Object Detection for Mechanical Parts}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Object detection is a critical task in computer vision, enabling machines to identify and locate objects within images or video streams. This project focuses on implementing and optimizing YOLO (You Only Look Once) models for detecting mechanical parts, specifically bearings, bolts, gears, and nuts. The goal is to develop a robust system that can be deployed on edge devices for real-time applications in manufacturing and quality control.
+
+The YOLOv8 architecture was chosen due to its balance of speed and accuracy, making it suitable for both training on standard hardware and inference on resource-constrained devices.
+
+\section{Methodology}
+
+\subsection{Dataset Preparation}
+
+A custom dataset of mechanical parts was collected and annotated. The dataset consists of four classes:
+\begin{itemize}
+\item Bearing
+\item Bolt
+\item Gear
+\item Nut
+\end{itemize}
+
+The dataset is split into training, validation, and test sets with images stored in the respective directories. Annotations are provided in YOLO format via the \texttt{mech\_parts\_data.yaml} configuration file.
+
+\subsection{Model Training}
+
+The YOLOv8 nano model (\texttt{yolov8n.pt}) was fine-tuned on the mechanical parts dataset. Training parameters included:
+\begin{itemize}
+\item Epochs: 50
+\item Image size: 640x640
+\item Batch size: 16
+\item Initial learning rate: 0.001
+\item Final learning rate factor: 0.01
+\end{itemize}
+
+The training was performed using the Ultralytics YOLO library, with results saved to the \texttt{runs/detect/yolo\_mechanical\_parts/yolo\_parts\_final} directory.
+
+\subsection{Model Evaluation}
+
+The trained model was evaluated on the test set using standard object detection metrics:
+\begin{itemize}
+\item mAP@50-95: Mean Average Precision across IoU thresholds from 0.5 to 0.95
+\item mAP@50: Mean Average Precision at IoU threshold 0.5
+\item Precision: Ratio of true positives to predicted positives
+\item Recall: Ratio of true positives to actual positives
+\end{itemize}
+
+\subsection{Model Optimization and Export}
+
+To enable deployment on edge devices, the model was exported to different formats:
+\begin{itemize}
+\item ONNX format for cross-platform compatibility
+\item TensorRT engine for NVIDIA Jetson devices
+\end{itemize}
+
+Benchmarking scripts were developed to compare inference performance across different model formats and hardware configurations.
+
+\subsection{Real-time Testing}
+
+A camera-based testing application was implemented to demonstrate real-time object detection capabilities. The system processes video frames from a webcam, applies the YOLO model, and displays bounding boxes with confidence scores for detections above 80\% confidence.
+
+\section{Results}
+
+The trained YOLOv8 model achieved satisfactory performance on the mechanical parts detection task. Evaluation metrics on the test set showed:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Metric & Value \\
+\hline
+mAP@50-95 & [Insert value] \\
+\hline
+mAP@50 & [Insert value] \\
+\hline
+Precision & [Insert value] \\
+\hline
+Recall & [Insert value] \\
+\hline
+\end{tabular}
+\caption{Model Performance Metrics}
+\end{table}
+
+Benchmarking revealed that ONNX models provide good performance on CPU, while TensorRT engines offer superior speed on GPU-enabled devices.
+
+Real-time testing demonstrated the model's ability to detect mechanical parts in live video streams at acceptable frame rates.
+
+\section{Conclusion}
+
+This project successfully demonstrated the application of YOLOv8 for mechanical parts detection. The trained model shows promise for industrial applications requiring automated quality inspection and inventory management.
+
+Future work could include:
+\begin{itemize}
+\item Expanding the dataset with more diverse mechanical parts
+\item Implementing model quantization for further optimization
+\item Integrating the system with robotic arms for automated sorting
+\end{itemize}
+
+The exported models in ONNX and TensorRT formats enable deployment on various edge devices, making the solution versatile for different industrial environments.
+
+\section{Robotic Setup and Data Management}
+
+To demonstrate the practical application of the YOLO-based mechanical parts detection system in an industrial environment, a robotic setup was designed and implemented. This setup integrates the trained model with computer vision and data management capabilities for automated inspection and data collection, enabling real-time evaluation of mechanical components. The implementation is realized through a Python-based script (\texttt{robot\_detection.py}) that runs on edge devices such as Raspberry Pi 4 or NVIDIA Jetson Nano.
+
+\subsection{System Architecture}
+
+The robotic system consists of the following components:
+\begin{itemize}
+\item \textbf{Edge Device}: A Raspberry Pi 4 or NVIDIA Jetson Nano running the optimized YOLO model in PyTorch format for efficient inference on resource-constrained hardware.
+\item \textbf{Camera}: A USB webcam or CSI camera for capturing real-time video streams of mechanical parts.
+\item \textbf{Sensors}: Mock implementations for environmental data collection, including temperature and radiation sensors (replaceable with real hardware for production use).
+\item \textbf{Local Storage}: A SQLite database for storing detection results and sensor data locally on the edge device.
+\item \textbf{Network Module}: Wi-Fi connectivity for uploading collected data to a central server when network availability is detected.
+\end{itemize}
+
+\subsection{Data Collection and Processing}
+
+The system operates in a continuous detection loop implemented in Python:
+\begin{enumerate}
+\item \textbf{Camera Capture}: The script initializes the camera using OpenCV, setting resolution to 640x480 pixels and frame rate to 30 FPS for optimization on edge devices.
+\item \textbf{YOLO Inference}: Each frame is processed by the YOLOv8 model loaded via Ultralytics library. Detections above an 80\% confidence threshold are extracted, including:
+  \begin{itemize}
+  \item Object type (Bearing, Bolt, Gear, Nut)
+  \item Bounding box coordinates (x1, y1, x2, y2)
+  \item Confidence score
+  \end{itemize}
+\item \textbf{Sensor Data Acquisition}: Concurrently, mock functions simulate readings from temperature and radiation sensors, generating random values within realistic ranges.
+\item \textbf{Data Storage}: All detections and sensor data are timestamped and stored in a local SQLite database. The database schema includes fields for unique ID, timestamp, object type, bounding box (stored as JSON), confidence, temperature, radiation, and upload status.
+\end{enumerate}
+
+\subsection{Database Design and Management}
+
+The local database (\texttt{robot\_data.db}) uses SQLite for lightweight, file-based storage suitable for edge devices. The schema is defined as follows:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Field & Type & Description \\
+\hline
+id & INTEGER PRIMARY KEY & Auto-incrementing unique identifier \\
+\hline
+timestamp & TEXT & Date and time of detection (YYYY-MM-DD HH:MM:SS) \\
+\hline
+object\_type & TEXT & Detected mechanical part class \\
+\hline
+bounding\_box & TEXT & JSON-encoded coordinates [x1, y1, x2, y2] \\
+\hline
+confidence & REAL & Detection confidence score (0.0-1.0) \\
+\hline
+temperature & REAL & Ambient temperature in °C \\
+\hline
+radiation & REAL & Radiation level (e.g., in mSv/h) \\
+\hline
+uploaded & INTEGER & Upload status flag (0 = not uploaded, 1 = uploaded) \\
+\hline
+\end{tabular}
+\caption{Database Schema for Detection Data}
+\end{table}
+
+Data insertion is performed after each frame processing, ensuring no loss during offline operation.
+
+\subsection{Data Storage and Synchronization}
+
+Detection results and sensor data are stored locally with the following logic:
+\begin{itemize}
+\item Data is buffered in the SQLite database during operation.
+\item Network connectivity is checked periodically using HTTP requests to a reliable endpoint (e.g., Google).
+\item When online, pending data (where \texttt{uploaded = 0}) is uploaded to a REST API server via POST requests with JSON payloads.
+\item Successful uploads update the \texttt{uploaded} flag to prevent re-transmission.
+\end{itemize}
+
+The system implements logging for monitoring performance, including FPS calculation and detection counts.
+
+\subsection{Implementation Considerations}
+
+The robotic setup addresses several challenges in industrial environments:
+\begin{itemize}
+\item \textbf{Edge Computing}: Model inference occurs locally to minimize latency and reduce dependency on cloud resources.
+\item \textbf{Offline Operation}: Local storage ensures continuous operation even during network outages.
+\item \textbf{Data Integrity}: Timestamped data with upload tracking prevents data loss and enables audit trails.
+\item \textbf{Scalability}: The modular Python script allows for easy integration of real sensors, robotic arm control, and alternative communication protocols (e.g., MQTT).
+\end{itemize}
+
+This integrated system demonstrates the transition from a standalone computer vision model to a complete industrial inspection solution, capable of autonomous operation and centralized data management. The implementation serves as a proof-of-concept for nuclear facility adaptations, with mock sensors providing a foundation for real hardware integration.
+
+\end{document}

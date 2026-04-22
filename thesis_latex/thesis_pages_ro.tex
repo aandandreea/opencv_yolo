@@ -1,0 +1,205 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Detecție de obiecte bazată pe YOLO pentru piese mecanice}
+\author{Numele tău}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducere}
+
+Detecția de obiecte este o sarcină critică în viziunea computerizată, permițând mașinilor să identifice și să localizeze obiecte în imagini sau fluxuri video. Acest proiect se concentrează pe implementarea și optimizarea modelelor YOLO (You Only Look Once) pentru detectarea pieselor mecanice, în special rulmenți, șuruburi, roți dințate și piulițe. Obiectivul este de a dezvolta un sistem robust care poate fi implementat pe dispozitive edge pentru aplicații în timp real în fabricare și controlul calității.
+
+Arhitectura YOLOv8 a fost aleasă datorită echilibrului său între viteză și acuratețe, ceea ce o face potrivită atât pentru antrenarea pe hardware standard, cât și pentru inferență pe dispozitive cu resurse limitate.
+
+\section{Metodologie}
+
+\subsection{Pregătirea dataset-ului}
+
+Un dataset personalizat de piese mecanice a fost colectat și adnotat. Dataset-ul constă din patru clase:
+\begin{itemize}
+\item Rulment
+\item Șurub
+\item Roată dințată
+\item Piuliță
+\end{itemize}
+
+Dataset-ul este împărțit în seturi de antrenament, validare și testare, cu imagini stocate în directoarele respective. Anotările sunt furnizate în format YOLO prin fișierul de configurare \texttt{mech\_parts\_data.yaml}.
+
+\subsection{Antrenarea modelului}
+
+Modelul YOLOv8 nano (\texttt{yolov8n.pt}) a fost ajustat fin pe dataset-ul de piese mecanice. Parametrii de antrenament au inclus:
+\begin{itemize}
+\item Epoci: 50
+\item Dimensiune imagine: 640x640
+\item Mărimea batch-ului: 16
+\item Rată de învățare inițială: 0.001
+\item Factor pentru rata de învățare finală: 0.01
+\end{itemize}
+
+Antrenamentul a fost realizat folosind biblioteca Ultralytics YOLO, iar rezultatele au fost salvate în directorul \texttt{runs/detect/yolo\_mechanical\_parts/yolo\_parts\_final}.
+
+\subsection{Evaluarea modelului}
+
+Modelul antrenat a fost evaluat pe setul de testare folosind metrici standard pentru detecția de obiecte:
+\begin{itemize}
+\item mAP@50-95: Precizie medie pe praguri IoU de la 0.5 la 0.95
+\item mAP@50: Precizie medie la pragul IoU 0.5
+\item Precision: Raportul dintre true positive și predicțiile pozitive
+\item Recall: Raportul dintre true positive și pozitivele reale
+\end{itemize}
+
+\subsection{Optimizarea modelului și exportul}
+
+Pentru a permite implementarea pe dispozitive edge, modelul a fost exportat în formate diferite:
+\begin{itemize}
+\item Format ONNX pentru compatibilitate cross-platform
+\item Motor TensorRT pentru dispozitive NVIDIA Jetson
+\end{itemize}
+
+Au fost dezvoltate scripturi de benchmarking pentru a compara performanța inferenței între formatele modelului și configurațiile hardware.
+
+\subsection{Testare în timp real}
+
+A fost implementată o aplicație de testare bazată pe cameră pentru a demonstra capabilitățile de detecție de obiecte în timp real. Sistemul procesează cadre video de la o cameră web, aplică modelul YOLO și afișează casete delimitatoare cu scoruri de încredere pentru detecțiile cu încredere mai mare de 80\%.
+
+\section{Rezultate}
+
+Rezultatele au fost salvate în directorul \texttt{C:\textbackslash Users\textbackslash eoanc\textbackslash opencv\_yolo\_test\textbackslash runs\textbackslash detect\textbackslash val6}.
+
+Modelul YOLOv8 antrenat a atins performanțe satisfăcătoare pentru sarcina de detecție a pieselor mecanice. Metricile de evaluare pe setul de testare au arătat:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Metrică & Valoare \\
+\hline
+mAP@50-95 & 0.7321115620497268 \\
+\hline
+mAP@50 & 0.894705222672099 \\
+\hline
+Precision & 0.8829821731126444 \\
+\hline
+Recall & 0.8380935528993065 \\
+\hline
+\end{tabular}
+\caption{Metrici de performanță ale modelului}
+\end{table}
+
+Benchmarking-ul a arătat că modelele ONNX oferă performanțe bune pe CPU, în timp ce motoarele TensorRT oferă viteză superioară pe dispozitive cu GPU.
+
+Testarea în timp real a demonstrat capacitatea modelului de a detecta piese mecanice în fluxuri video live la rate de cadre acceptabile.
+
+\section{Concluzie}
+
+Acest proiect a demonstrat cu succes aplicarea YOLOv8 pentru detectarea pieselor mecanice. Modelul antrenat arată potențial pentru aplicații industriale care necesită inspecție automată și managementul inventarului.
+
+Munca viitoare ar putea include:
+\begin{itemize}
+\item Extinderea dataset-ului cu mai multe piese mecanice diverse
+\item Implementarea cuantizării modelului pentru optimizare suplimentară
+\item Integrarea sistemului cu brațe robotizate pentru sortare automată
+\end{itemize}
+
+Modelele exportate în formate ONNX și TensorRT permit implementarea pe diverse dispozitive edge, făcând soluția versatilă pentru diferite medii industriale.
+
+\section{Configurația robotică și managementul datelor}
+
+Pentru a demonstra aplicarea practică a sistemului de detecție a pieselor mecanice bazat pe YOLO într-un mediu industrial, a fost proiectată și implementată o configurație robotică. Această configurație integrează modelul antrenat cu capabilități de viziune computerizată și management al datelor pentru inspecție automată și colectare de date în timp real. Implementarea este realizată printr-un script Python (\texttt{robot\_detection.py}) care rulează pe dispozitive edge precum Raspberry Pi 4 sau NVIDIA Jetson Nano.
+
+\subsection{Arhitectura sistemului}
+
+Sistemul robotic este alcătuit din următoarele componente:
+\begin{itemize}
+\item \textbf{Dispozitiv edge}: Un Raspberry Pi 4 sau NVIDIA Jetson Nano rulează modelul YOLO optimizat în format PyTorch pentru inferență eficientă pe hardware cu resurse limitate.
+\item \textbf{Cameră}: O cameră web USB sau CSI pentru captarea fluxurilor video în timp real ale pieselor mecanice.
+\item \textbf{Senzori}: Implementări mock pentru colectarea datelor de mediu, incluzând senzori de temperatură și radiație (pot fi înlocuite cu hardware real pentru utilizare în producție).
+\item \textbf{Stocare locală}: O bază de date SQLite pentru stocarea rezultatelor detecției și a datelor senzorilor local pe dispozitivul edge.
+\item \textbf{Modul de rețea}: Conectivitate Wi-Fi pentru încărcarea datelor colectate către un server central atunci când este detectată disponibilitatea rețelei.
+\end{itemize}
+
+\subsection{Colectarea și procesarea datelor}
+
+Sistemul funcționează într-un buclă continuă de detecție implementată în Python:
+\begin{enumerate}
+\item \textbf{Captarea de la cameră}: Scriptul inițializează camera folosind OpenCV, setând rezoluția la 640x480 pixeli și rata de cadre la 30 FPS pentru optimizare pe dispozitive edge.
+\item \textbf{Inferența YOLO}: Fiecare cadru este procesat de modelul YOLO încărcat prin biblioteca Ultralytics. Detecțiile cu încredere peste 80\% sunt extrase, incluzând:
+  \begin{itemize}
+  \item Tipul obiectului (Rulment, Șurub, Roată dințată, Piuliță)
+  \item Coordonațele casetei delimitatoare (x1, y1, x2, y2)
+  \item Scorul de încredere
+  \end{itemize}
+\item \textbf{Achiziția datelor senzorilor}: În paralel, funcțiile mock simulează citiri de la senzori de temperatură și radiație, generând valori aleatoare în intervale realiste.
+\item \textbf{Stocarea datelor}: Toate detecțiile și datele senzorilor sunt marcate cu timestamp și stocate într-o bază de date SQLite locală. Schema bazei de date include câmpuri pentru ID unic, timestamp, tipul obiectului, caseta delimitatoare (stocată ca JSON), încredere, temperatură, radiație și stare de încărcare.
+\end{enumerate}
+
+\subsection{Proiectarea și managementul bazei de date}
+
+Baza de date locală (\texttt{robot\_data.db}) folosește SQLite pentru stocare ușoară, pe fișier, potrivită pentru dispozitive edge. Schema este definită astfel:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Câmp & Tip & Descriere \\
+\hline
+id & INTEGER PRIMARY KEY & Identificator unic auto-incrementat \\
+\hline
+timestamp & TEXT & Data și ora detecției (YYYY-MM-DD HH:MM:SS) \\
+\hline
+object\_type & TEXT & Clasa piesei mecanice detectate \\
+\hline
+bounding\_box & TEXT & Coordonnatele codificate JSON [x1, y1, x2, y2] \\
+\hline
+confidence & REAL & Scorul de încredere al detecției (0.0-1.0) \\
+\hline
+temperature & REAL & Temperatura ambientală în °C \\
+\hline
+radiation & REAL & Nivelul de radiație (de ex. în mSv/h) \\
+\hline
+uploaded & INTEGER & Flag pentru starea încărcării (0 = neîncărcat, 1 = încărcat) \\
+\hline
+\end{tabular}
+\caption{Schema bazei de date pentru datele de detecție}
+\end{table}
+
+Inserția datelor se realizează după procesarea fiecărui cadru, asigurând lipsa pierderii în timpul funcționării offline.
+
+\subsection{Stocarea și sincronizarea datelor}
+
+Rezultatele detecției și datele senzorilor sunt stocate local cu următoarea logică:
+\begin{itemize}
+\item Datele sunt puse în buffer în baza de date SQLite în timpul funcționării.
+\item Conectivitatea la rețea este verificată periodic folosind cereri HTTP către un endpoint fiabil (de ex. Google).
+\item Când este online, datele în așteptare (unde \texttt{uploaded = 0}) sunt încărcate către un server API REST prin cereri POST cu payload JSON.
+\item Încărcările reușite actualizează flag-ul \texttt{uploaded} pentru a preveni retransmiterea.
+\end{itemize}
+
+Sistemul implementează jurnalizare pentru monitorizarea performanței, inclusiv calculul FPS și numărul de detecții.
+
+\subsection{Considerații de implementare}
+
+Configurația robotică abordează mai multe provocări din mediile industriale:
+\begin{itemize}
+\item \textbf{Edge computing}: Inferența modelului are loc local pentru a minimiza latența și a reduce dependența de resurse cloud.
+\item \textbf{Funcționare offline}: Stocarea locală asigură funcționare continuă chiar și în timpul întreruperilor de rețea.
+\item \textbf{Integritatea datelor}: Datele marcate cu timestamp și urmărirea încărcării previn pierderea datelor și permit auditarea.
+\item \textbf{Scalabilitate}: Scriptul Python modular permite integrarea ușoară a senzorilor reali, controlului brațului robotizat și protocolor alternative de comunicație (de ex. MQTT).
+\end{itemize}
+
+Acest sistem integrat demonstrează tranziția de la un model de viziune computerizată independent la o soluție completă de inspecție industrială, capabilă de funcționare autonomă și management centralizat al datelor. Implementarea servește ca proof-of-concept pentru adaptări în instalații nucleare, cu senzori mock care oferă o bază pentru integrarea hardware-ului real.
+
+\end{document}
