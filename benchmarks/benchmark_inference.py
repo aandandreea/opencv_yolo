@@ -99,9 +99,9 @@ class YOLOBenchmark:
 
 
 if __name__ == "__main__":
-    MODEL_PATH = r"C:\Users\eoanc\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"
-    ONNX_MODEL_PATH = r"C:\Users\eoanc\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.onnx"
-    IMAGE_PATH = r"C:\Users\eoanc\opencv_yolo_test\mechanical_parts_dataset\test\images\2f443tj_jpg.rf.0453633956bd83914f24ffcba5afbdcf.jpg"
+    MODEL_PATH = r"C:\Users\aand\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"
+    ONNX_MODEL_PATH = r"C:\Users\aand\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.onnx"
+    IMAGE_PATH = r"C:\Users\aand\opencv_yolo_test\mechanical_parts_dataset\test\images\2f443tj_jpg.rf.0453633956bd83914f24ffcba5afbdcf.jpg"
 
     pt_benchmark = YOLOBenchmark(
         model_path=MODEL_PATH,

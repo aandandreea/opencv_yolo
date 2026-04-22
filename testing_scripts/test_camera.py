@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import cv2
 import time
 
-model = YOLO(r"C:\Users\eoanc\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt")
+model = YOLO(r"C:\Users\aand\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt")
 
 cap = cv2.VideoCapture(0)
 

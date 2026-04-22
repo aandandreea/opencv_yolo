@@ -23,7 +23,7 @@ def train_yolo():
 
 def test():
     model = YOLO(
-        r"C:\Users\eoanc\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"
+        r"C:\Users\aand\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"
     )
 
     metrics = model.val(

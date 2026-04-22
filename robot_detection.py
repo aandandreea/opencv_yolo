@@ -12,7 +12,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Configuration
-MODEL_PATH = r"C:\Users\eoanc\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"  # Update for Pi/Jetson
+MODEL_PATH = r"C:\Users\aand\opencv_yolo_test\runs\detect\yolo_mechanical_parts\yolo_parts_final\weights\best.pt"  # Update for Pi/Jetson
 DATABASE_PATH = 'robot_data.db'
 UPLOAD_URL = 'http://your-server.com/api/upload'  # Replace with actual server URL
 CONFIDENCE_THRESHOLD = 0.8
