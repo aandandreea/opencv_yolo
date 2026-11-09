@@ -187,6 +187,3 @@ Aplicația pornește pe **http://localhost:8080**. Baza de date H2 este în memo
 - [ONNX Runtime](https://onnxruntime.ai/)
 - IAEA, *Considerations for Deploying Artificial Intelligence Applications in the Nuclear Power Industry*, NR-T-1.26, 2025
 
-## Licență
-
-Adaugă aici licența aleasă (de ex. MIT).
